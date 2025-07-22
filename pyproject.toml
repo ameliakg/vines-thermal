@@ -1,0 +1,38 @@
+[project]
+name = "vine_segmentation"
+version = "0.1.0"
+description = """""
+authors = [{names = Amelia Keyser-Gibson", email="akeyserg@uw.edu"},
+	   {name="Noah C. Benson", email="nben@uw.edu"},
+           {name="Bernease Herman", email="bernease@uw.edu"}]
+license = {"text"="MIT"}
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = []
+classifiers = [
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Scientific/Engineering :: Information Analysis',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Operating System :: Unix',
+    'Operating System :: MacOS']
+dependencies = [
+    'numpy >= 2.2',
+    'flyr',
+    'scikit-image',
+    'scikit-learn',
+    'pandas',
+    'matplotlib >= 3.9']
+
+[project.urls]
+homepage = "https://github.com/ameliakg/vines-thermal"
+documentation = "https://github.com/ameliakg/vines-thermal"
+repository = "https://github.com/ameliakg/vines-thermal"
