@@ -1,7 +1,7 @@
 [project]
 name = "vine_segmentation"
 version = "0.1.0"
-description = """""
+description = """"""
 authors = [{name="Amelia Keyser-Gibson", email="akeyserg@uw.edu"},
 	   {name="Noah C. Benson", email="nben@uw.edu"},
            {name="Bernease Herman", email="bernease@uw.edu"}]
