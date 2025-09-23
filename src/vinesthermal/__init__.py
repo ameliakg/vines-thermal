@@ -58,7 +58,7 @@ def filter_image(image, gabor_sizes=None, gabor_angles=None):
     elif isinstance(gabor_angles, int):
         gabor_angles = np.arange(gabor_angles) / gabor_angles * np.pi
     # Code
-    im = image
+    im = to_image(image)
     # Filter in many ways:
     output = []
     for gsz in gabor_sizes:
