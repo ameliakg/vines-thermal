@@ -25,7 +25,7 @@ import sklearn as skl
 
 def load_image(filepath):
     """Loads an image and returns the numpy image array."""
-    im = ski.io.imread(flnm)
+    im = ski.io.imread(filepath)
     im = np.array(im, dtype=float)
     return im / 255
 def to_image(image):
