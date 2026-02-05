@@ -2,9 +2,10 @@
 name = "vinesthermal"
 version = "0.1.0"
 description = """"""
-authors = [{name="Amelia Keyser-Gibson", email="akeyserg@uw.edu"},
-	   {name="Noah C. Benson", email="nben@uw.edu"},
-           {name="Bernease Herman", email="bernease@uw.edu"}]
+authors = [
+    {name="Amelia Keyser-Gibson", email="akeyserg@uw.edu"},
+	{name="Noah C. Benson", email="nben@uw.edu"},
+    {name="Bernease Herman", email="bernease@uw.edu"}]
 license = {"text"="MIT"}
 readme = "README.md"
 requires-python = ">=3.8"
@@ -26,9 +27,8 @@ classifiers = [
     'Operating System :: MacOS']
 dependencies = [
     'numpy >= 2.2',
+	'torch',
     'flyr',
-    'scikit-image',
-    'scikit-learn',
     'pandas',
     'matplotlib >= 3.9']
 
