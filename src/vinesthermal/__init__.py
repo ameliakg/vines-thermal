@@ -10,3 +10,5 @@ from .dataset import FlirDataset
 from .unet import UNet
 
 from .loss import dice_loss
+
+from .training import train_model
