@@ -6,3 +6,5 @@ We should end with an example.
 """
 
 from .dataset import FlirDataset
+
+from .unet import UNet
