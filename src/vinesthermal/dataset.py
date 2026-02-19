@@ -55,20 +55,27 @@ class FlirDataset(torch.utils.data.Dataset):
         imsz = image_subsize
         stride = imsz if stride is None else stride
         sdata = {}
+        # TODO: This needs to be tested for the rowidx and colidx hangover
         for key in self.names:
             (thr_im, opt_im) = self.images[key]
             ann_im = self.annots[key]
             for (rno, rowidx) in enumerate(range(0, opt_im.shape[0], stride)):
                 if rowidx + imsz >= opt_im.shape[0]:
-                    continue
+                    rowidx = opt_im.shape[0] - imsz 
                 for (cno, colidx) in enumerate(range(0, opt_im.shape[1], stride)):
                     if colidx + imsz >= opt_im.shape[1]:
-                        continue
-                    # Get the subimage from the optical and annotation images:
-                    opt_sub = opt_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
-                    thr_sub = thr_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
-                    ann_sub = ann_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
-                    tup = (rowidx, colidx, opt_sub, ann_sub, thr_sub)
+                        # If we get here, it means that there's a bit of the image
+                        # dangling off the end!
+                        opt_sub = opt_im[rowidx:rowidx + imsz, -imsz:]
+                        thr_sub = thr_im[rowidx:rowidx + imsz, -imsz:]
+                        ann_sub = ann_im[rowidx:rowidx + imsz, -imsz:]
+                        tup = (rowidx, opt_im.shape[1] - imsz, opt_sub, ann_sub, thr_sub)
+                    else:
+                        # Get the subimage from the optical and annotation images:
+                        opt_sub = opt_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
+                        thr_sub = thr_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
+                        ann_sub = ann_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
+                        tup = (rowidx, colidx, opt_sub, ann_sub, thr_sub)
                     sdata[key, rno, cno] = tup
         self.sample_data = sdata
         self.masks = {}
