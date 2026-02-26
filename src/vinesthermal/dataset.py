@@ -1,4 +1,7 @@
-"""Code for the FlirDataset and image loading utilities.
+"""Code for the FlirDataset image loading utilities. This reads in thermal
+images that are saved at a specific file path, finds annotated RGB images
+for training and validation (if using), extracts the RGB images from all 
+thermal images in the dataset and prepares them to be segmented by the U-Net 
 """
 
 # Import Dependencies
@@ -12,14 +15,26 @@ from pathlib import Path
 from os import fspath
 from PIL import Image
 
-# FlirDataset Class goes here:
+# FlirDataset Class:
 class FlirDataset(torch.utils.data.Dataset):
     ""
     def __len__(self):
         return len(self.samples)
     def __getitem__(self, k):
         return self.samples[k]
-    def __init__(self, path, datatype='train', image_subsize=64, stride=None): 
+    def __init__(self, path, datatype='train', image_subsize=64, stride=None):
+	"""Finds saved images based on a filepath for training, testing,
+	validation or non (images for segmentation by the model). Training,
+	testing, and validation are FLIR RGB images that have been annotated
+	with red to indicate plant material. Annotated images need to have the 
+	same file name (minus the file formate suffix) as their corresponding 
+	thermal images to be matched with one another.  RGB images for FLIR 
+	images that the model is later used on do not need to be saved
+	separately since they can be extracted from the thermal image. Divides
+	images up into image patches for use by the model and builds up a
+	dictionary of image patches whose pixels have been classified by
+	the model.
+	""" 
         from glob import glob
         from pathlib import Path
         path = Path(path)
@@ -134,7 +149,8 @@ class FlirDataset(torch.utils.data.Dataset):
         y0 = round(opt_rs // 2 - thr_rs // 2 + y0)
         return (thr, opt[y0:y0+thr_rs, x0:x0+thr_cs, :])
     def pred_all(self, model):
-        """Returns predicted segmentations for all items in the dataset."""
+        """Returns predicted segmentations for all image patches in
+	 the dataset."""
         shape = (self.image_subsize, self.image_subsize)
         inpts = torch.stack([img for (img,_) in self.samples if img.shape[1:] == shape], axis=0).detach()
         targs = torch.stack([trg for (_,trg) in self.samples if trg.shape[1:] == shape], axis=0).detach()
@@ -146,7 +162,9 @@ class FlirDataset(torch.utils.data.Dataset):
             preds[:, 0, ...],
             torch.permute(targs, (0,2,3,1)))
     def extract_temp(self, model):
-        """Extracts temperature from predicted plant segmentation"""
+        """Extracts temperature for each pixel predicted plant segmentation
+	separates into what was in the plant segmentation "thermal_inseg"
+	and non plant "thermal_outseg" """
         results = []
         for ((input, _), sdata) in zip(self.samples, self.sample_data.values()):
             thermal_im = sdata[-1]
@@ -162,7 +180,10 @@ class FlirDataset(torch.utils.data.Dataset):
             results.append((thermal_inseg, thermal_outseg))
         return results
     def image_temps(self, model):
-        """Gives us back images matched to temperatures"""
+        """For each file, compiles the data from all image patches
+	and returns a DataFrame with images names matched to the mean temperatures
+	of the plant material "plant_temp" and none plant material
+	"none_temp" """
         (_,preds,_) = self.pred_all(model)
         result = {}
         for (pred, ((file,r,c),sdata)) in zip(preds, self.sample_data.items()):
