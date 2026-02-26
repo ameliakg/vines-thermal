@@ -23,18 +23,18 @@ class FlirDataset(torch.utils.data.Dataset):
     def __getitem__(self, k):
         return self.samples[k]
     def __init__(self, path, datatype='train', image_subsize=64, stride=None):
-	"""Finds saved images based on a filepath for training, testing,
-	validation or non (images for segmentation by the model). Training,
-	testing, and validation are FLIR RGB images that have been annotated
-	with red to indicate plant material. Annotated images need to have the 
-	same file name (minus the file formate suffix) as their corresponding 
-	thermal images to be matched with one another.  RGB images for FLIR 
-	images that the model is later used on do not need to be saved
-	separately since they can be extracted from the thermal image. Divides
-	images up into image patches for use by the model and builds up a
-	dictionary of image patches whose pixels have been classified by
-	the model.
-	""" 
+		"""Finds saved images based on a filepath for training, testing,
+		validation or non (images for segmentation by the model). Training,
+		testing, and validation are FLIR RGB images that have been annotated
+		with red to indicate plant material. Annotated images need to have the 
+		same file name (minus the file formate suffix) as their corresponding 
+		thermal images to be matched with one another.  RGB images for FLIR 
+		images that the model is later used on do not need to be saved
+		separately since they can be extracted from the thermal image. Divides
+		images up into image patches for use by the model and builds up a
+		dictionary of image patches whose pixels have been classified by
+		the model.
+		""" 
         from glob import glob
         from pathlib import Path
         path = Path(path)
@@ -170,8 +170,8 @@ class FlirDataset(torch.utils.data.Dataset):
             torch.permute(targs, (0,2,3,1)))
     def extract_temp(self, model):
         """Extracts temperature for each pixel predicted plant segmentation
-	separates into what was in the plant segmentation "thermal_inseg"
-	and non plant "thermal_outseg" """
+		separates into what was in the plant segmentation "thermal_inseg"
+		and non plant "thermal_outseg" """
         results = []
         for ((input, _), sdata) in zip(self.samples, self.sample_data.values()):
             thermal_im = sdata[-1]
@@ -188,9 +188,9 @@ class FlirDataset(torch.utils.data.Dataset):
         return results
     def image_temps(self, model):
         """For each file, compiles the data from all image patches
-	and returns a DataFrame with images names matched to the mean temperatures
-	of the plant material "plant_temp" and none plant material
-	"none_temp" """
+		and returns a DataFrame with images names matched to the mean temperatures
+		of the plant material "plant_temp" and none plant material
+		"none_temp" """
         (_,preds,_) = self.pred_all(model)
         result = {}
         for (pred, ((file,r,c),sdata)) in zip(preds, self.sample_data.items()):
