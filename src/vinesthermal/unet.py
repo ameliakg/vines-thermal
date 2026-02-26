@@ -3,8 +3,8 @@
 
 import torch
 
-#===============================================================================
-#U-net code
+#==============================================================================
+# U-net code
 # Dependencies
 def convrelu(in_channels, out_channels,
              kernel=3, padding=None, stride=1, bias=True, inplace=True):
