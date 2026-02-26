@@ -168,10 +168,22 @@ class FlirDataset(torch.utils.data.Dataset):
             torch.permute(inpts, (0,2,3,1)),
             preds[:, 0, ...],
             torch.permute(targs, (0,2,3,1)))
-    def pred_images(self, model):
+    def pred_images(self, model, maxsize=512):
         """Returns predicted segmentations for all images in
         the dataset."""
         inpts, preds, targs = self.pred_all(model)
+        # First, we create a bunch of blank (NaN) images:
+        preds_full = {}
+        for (filename, (opt,thr)) in self.images.items():
+            preds_full[filename] = np.full(thr, np.nan)
+        # Next, we iterate over sample data and preds together (they are aligned):
+        for ((k,v), pred) in zip(self.sample_data.items(), preds):
+            (filename, rno, cno) = k
+            pred_full = preds_full[filename]
+            rlen, clen = pred.shape
+            pred_subpatch = pred_full[rno:rno + rlen, cno:cno + clen]
+            pred_full[rno:rno + rlen, cno:cno + clen] = np.nanmean([pred_subpatch, pred], axis=0)
+        return preds_full
     def extract_temp(self, model):
         """Extracts temperature for each pixel predicted plant segmentation
         separates into what was in the plant segmentation "thermal_inseg"
