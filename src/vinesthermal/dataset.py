@@ -175,7 +175,7 @@ class FlirDataset(torch.utils.data.Dataset):
         # First, we create a bunch of blank (NaN) images:
         preds_full = {}
         for (filename, (opt,thr)) in self.images.items():
-            preds_full[filename] = np.full(thr, np.nan)
+            preds_full[filename] = np.full(thr.shape, np.nan)
         # Next, we iterate over sample data and preds together (they are aligned):
         for ((k,v), pred) in zip(self.sample_data.items(), preds):
             (filename, rno, cno) = k
