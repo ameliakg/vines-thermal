@@ -168,6 +168,10 @@ class FlirDataset(torch.utils.data.Dataset):
             torch.permute(inpts, (0,2,3,1)),
             preds[:, 0, ...],
             torch.permute(targs, (0,2,3,1)))
+    def pred_images(self, model):
+        """Returns predicted segmentations for all images in
+        the dataset."""
+        inpts, preds, targs = self.pred_all(model)
     def extract_temp(self, model):
         """Extracts temperature for each pixel predicted plant segmentation
         separates into what was in the plant segmentation "thermal_inseg"
