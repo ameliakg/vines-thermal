@@ -1,7 +1,8 @@
 """Code for the FlirDataset image loading utilities. This reads in thermal
 images that are saved at a specific file path, finds annotated RGB images
 for training and validation (if using), extracts the RGB images from all 
-thermal images in the dataset and prepares them to be segmented by the U-Net 
+thermal images in the dataset and prepares them to be segmented by the U-Net.
+Also includes functions for extracting temperature data post segmentation.
 """
 
 # Import Dependencies
