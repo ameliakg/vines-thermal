@@ -78,20 +78,15 @@ class FlirDataset(torch.utils.data.Dataset):
             for (rno, rowidx) in enumerate(range(0, opt_im.shape[0], stride)):
                 if rowidx + imsz >= opt_im.shape[0]:
                     rowidx = opt_im.shape[0] - imsz 
-                for (cno, colidx) in enumerate(range(0, opt_im.shape[1], stride)):
-                    if colidx + imsz >= opt_im.shape[1]:
-                        # If we get here, it means that there's a bit of the image
-                        # dangling off the end!
-                        opt_sub = opt_im[rowidx:rowidx + imsz, -imsz:]
-                        thr_sub = thr_im[rowidx:rowidx + imsz, -imsz:]
-                        ann_sub = ann_im[rowidx:rowidx + imsz, -imsz:]
-                        tup = (rowidx, opt_im.shape[1] - imsz, opt_sub, ann_sub, thr_sub)
-                    else:
-                        # Get the subimage from the optical and annotation images:
-                        opt_sub = opt_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
-                        thr_sub = thr_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
-                        ann_sub = ann_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
-                        tup = (rowidx, colidx, opt_sub, ann_sub, thr_sub)
+                for (cno, col_start) in enumerate(range(0, opt_im.shape[1], stride)):
+                    colidx = col_start
+                    if colidx + imsz > opt_im.shape[1]:
+                        colidx = opt_im.shape[1] - imsz
+            
+                    opt_sub = opt_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
+                    thr_sub = thr_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
+                    ann_sub = ann_im[rowidx:rowidx + imsz, colidx:colidx + imsz]
+                    tup = (rowidx, colidx, opt_sub, ann_sub, thr_sub)
                     sdata[key, rno, cno] = tup
         self.sample_data = sdata
         self.masks = {}
@@ -180,10 +175,11 @@ class FlirDataset(torch.utils.data.Dataset):
         # Next, we iterate over sample data and preds together (they are aligned):
         for ((k,v), pred) in zip(self.sample_data.items(), preds):
             (filename, rno, cno) = k
+            (rowidx, colidx, opt_sub, ann_sub, thr_sub) = v
             pred_full = preds_full[filename]
             rlen, clen = pred.shape
-            pred_subpatch = pred_full[rno:rno + rlen, cno:cno + clen]
-            pred_full[rno:rno + rlen, cno:cno + clen] = np.nanmean([pred_subpatch, pred], axis=0)
+            pred_subpatch = pred_full[rowidx:rowidx + rlen, colidx:colidx + clen]
+            pred_full[rowidx:rowidx + rlen, colidx:colidx + clen] = np.nanmean([pred_subpatch, pred], axis=0)
         return preds_full
     def extract_temp(self, model):
         """Extracts temperature for each pixel predicted plant segmentation
