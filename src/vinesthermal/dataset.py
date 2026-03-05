@@ -180,6 +180,19 @@ class FlirDataset(torch.utils.data.Dataset):
             pred_subpatch = pred_full[rowidx:rowidx + rlen, colidx:colidx + clen]
             pred_full[rowidx:rowidx + rlen, colidx:colidx + clen] = np.nanmean([pred_subpatch, pred], axis=0)
         return preds_full
+    def temp_images(self, model):
+        """Extracts temperature for complete images"""
+        preds = self.pred_images(model)
+        results = {}
+        for (k, (thr,opt)) in self.images.items():
+            pred = preds[k]
+            seg = pred > 0.5
+            plant = np.array(thr)
+            nonplant = np.array(thr)
+            nonplant[seg] = np.nan # plant to nan in non plant
+            plant[~seg] = np.nan
+            results[k] = (plant, nonplant) # remember that the plant comes first
+        return results
     def extract_temp(self, model):
         """Extracts temperature for each pixel predicted plant segmentation
         separates into what was in the plant segmentation "thermal_inseg"
@@ -198,7 +211,18 @@ class FlirDataset(torch.utils.data.Dataset):
             thermal_outseg = thermal_im[~pred].flatten()
             results.append((thermal_inseg, thermal_outseg))
         return results
-    def image_temps(self, model):
+    def temp_dataframe(self, model):
+        """Make a dataframe"""
+        temps = self.temp_images(model)
+        df = {"file": [], "planttemp": [], "nontemp": [], "percentplant": []}
+        for (k, (thr,opt)) in self.images.items():
+            plant, nonplant = temps[k]
+            df["file"].append(k)
+            df["planttemp"].append(np.nanmean(plant))
+            df["nontemp"].append(np.nanmean(nonplant))
+            df["percentplant"].append((np.sum(np.isfinite(plant))/(plant.shape[0]*plant.shape[1]))*100)
+        return pd.DataFrame(df)
+    def image_patch_temps(self, model):
         """For each file, compiles the data from all image patches
         and returns a DataFrame with images names matched to the mean temperatures
         of the plant material "plant_temp" and none plant material
