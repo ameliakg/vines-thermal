@@ -78,8 +78,7 @@ class FlirDataset(torch.utils.data.Dataset):
             for (rno, rowidx) in enumerate(range(0, opt_im.shape[0], stride)):
                 if rowidx + imsz >= opt_im.shape[0]:
                     rowidx = opt_im.shape[0] - imsz 
-                for (cno, col_start) in enumerate(range(0, opt_im.shape[1], stride)):
-                    colidx = col_start
+                for (cno, colidx) in enumerate(range(0, opt_im.shape[1], stride)):
                     if colidx + imsz > opt_im.shape[1]:
                         colidx = opt_im.shape[1] - imsz
             
