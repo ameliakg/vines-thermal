@@ -186,7 +186,7 @@ class FlirDataset(torch.utils.data.Dataset):
         results = {}
         for (k, (thr,opt)) in self.images.items():
             pred = preds[k]
-            seg = pred > 0.5
+            seg = pred > 0.8
             plant = np.array(thr)
             nonplant = np.array(thr)
             nonplant[seg] = np.nan # plant to nan in non plant
@@ -221,6 +221,20 @@ class FlirDataset(torch.utils.data.Dataset):
             df["planttemp"].append(np.nanmean(plant))
             df["nontemp"].append(np.nanmean(nonplant))
             df["percentplant"].append((np.sum(np.isfinite(plant))/(plant.shape[0]*plant.shape[1]))*100)
+        return pd.DataFrame(df)
+    def temp_dataframe_crop(self, model):
+        """Make a dataframe"""
+        x1, y1, x2, y2 = 160, 120, 400, 255
+        temps = self.temp_images(model)
+        df = {"file": [], "planttemp": [], "nontemp": [], "percentplant": []}
+        for (k, (thr, opt)) in self.images.items():
+            plant, nonplant = temps[k]
+            plant = plant[y1:y2, x1:x2]
+            nonplant = nonplant[y1:y2, x1:x2]
+            df["file"].append(k)
+            df["planttemp"].append(np.nanmean(plant))
+            df["nontemp"].append(np.nanmean(nonplant))
+            df["percentplant"].append((np.sum(np.isfinite(plant)) / (plant.shape[0] * plant.shape[1])) * 100)
         return pd.DataFrame(df)
     def image_patch_temps(self, model):
         """For each file, compiles the data from all image patches

@@ -1,6 +1,6 @@
 """Subpackage for the loss function.
 """
-
+import torch
 def is_logits(data): 
     """Attempts to guess whether the given PyTorch tensor contains logits.
 
