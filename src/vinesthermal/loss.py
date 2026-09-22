@@ -11,7 +11,7 @@ def is_logits(data):
     elif (data < 0).any(): return True
     else:                  return False
 # writing a test DICE loss coefficient        
-def dice_loss(pred, gold, logits=None, smoothing=0, metrics=None):
+def dice_loss(pred, gold, logits=None, smoothing=1, metrics=None):
     """Returns the loss based on the dice coefficient.
     
     `dice_loss(pred, gold)` returns the dice-coefficient loss between the
