@@ -11,7 +11,7 @@ def is_logits(data):
     elif (data < 0).any(): return True
     else:                  return False
 # writing a test DICE loss coefficient        
-def dice_loss(pred, gold, logits=None, smoothing=1, metrics=None):
+def dice_loss(pred, gold, logits=None, smoothing=0, metrics=None):
     """Returns the loss based on the dice coefficient.
     
     `dice_loss(pred, gold)` returns the dice-coefficient loss between the
@@ -32,7 +32,7 @@ def dice_loss(pred, gold, logits=None, smoothing=1, metrics=None):
         argument. If `None`, then attempts to deduce whether the input is or is
         not logits. The default is `None`.
     smoothing : number, optional
-        The smoothing coefficient `s`. The default is `1`.
+        The smoothing coefficient `s`. The default is `0`.
     metrics : dict or None, optional
         An optional dictionary into which the key `'dice'` should be inserted
         with the dice-loss as the value.
