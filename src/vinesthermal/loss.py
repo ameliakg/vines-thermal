@@ -47,7 +47,7 @@ def dice_loss(pred, gold, logits=None, smoothing=0, metrics=None):
     if logits is None: logits = is_logits(pred) #sometimes logit, sometimes probability, this func automatically detect whether logit or prob
     if logits: pred = torch.sigmoid(pred)
     intersection = (pred * gold) #high probabilities get higher values, low get low, gold is 0s and 1s, this gives predicted probabilities where true value is correct
-    pred = pred**2 #noah checking if we should be squaring here
+    pred = pred**2 
     gold = gold**2
     while len(intersection.shape) > 2:
         intersection = intersection.sum(dim=-1)
